@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository //указываем для спринг, что это репозиторий
-public interface PlayerRepository extends JpaRepository<Player, Integer> {// для создания стандартных методов сохранения, чтения, обвновления, удаления
+public interface PlayerRepository extends JpaRepository<Player, Integer> {// для создания стандартных методов поиска и работы: всех, одного, сохранить, удалить и т.д.
 }
