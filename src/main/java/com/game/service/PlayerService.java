@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service //указываем для спринг, что это сервис сущности
 @Transactional(readOnly = true) //указываем спринг, что методы класса по умолчанию будут работать только на чтение (get)
-public class PlayerService{
+public class PlayerService {
 
     private final PlayerRepository playerRepository; //внедряем репозиторий
 
@@ -23,5 +23,9 @@ public class PlayerService{
 
     public Page<Player> findAll(Pageable pageable) {
         return playerRepository.findAll(pageable);
+    }
+
+    public Long findAllCount() {
+        return playerRepository.count();
     }
 }

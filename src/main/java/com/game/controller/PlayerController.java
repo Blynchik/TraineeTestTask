@@ -47,4 +47,20 @@ public class PlayerController {
         Page<Player> allPlayers = playerService.findAll(pageable);
         return allPlayers.getContent();
     }
+
+    @GetMapping("/count") //по запросу по условию
+    @ResponseBody
+    public Long getAllCount(@RequestParam(value = "name", required = false) String name,
+                                   @RequestParam(value = "title", required = false) String title,
+                                   @RequestParam(value = "race", required = false) Race race,
+                                   @RequestParam(value = "profession", required = false) Profession profession,
+                                   @RequestParam(value = "after", required = false) Long after,
+                                   @RequestParam(value = "before", required = false) Long before,
+                                   @RequestParam(value = "banned", required = false) Boolean banned,
+                                   @RequestParam(value = "minExperience", required = false) Integer minExperience,
+                                   @RequestParam(value = "maxExperience", required = false) Integer maxExperience,
+                                   @RequestParam(value = "minLevel", required = false) Integer minLevel,
+                                   @RequestParam(value = "maxLevel", required = false) Integer maxLevel) {
+        return playerService.findAllCount();
+    }
 }
