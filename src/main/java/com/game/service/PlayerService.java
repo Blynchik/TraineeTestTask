@@ -24,13 +24,24 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
-    public Player findOne(int id) {
-        Optional<Player> foundPerson = playerRepository.findById(id);
-        return foundPerson.orElse(null);
+    public Player findOne(long id) {
+        Optional<Player> foundPlayer = playerRepository.findById(id);
+        return foundPlayer.orElse(null);
+    }
+
+    @Transactional //не только для чтения
+    public void save(Player player) {
+        playerRepository.save(player);
     }
 
     @Transactional
-    public void save(Player player) {
-        playerRepository.save(player);
+    public void update(long id, Player updatedPlayer){
+        updatedPlayer.setId(id);
+        playerRepository.save(updatedPlayer);
+    }
+
+    @Transactional
+    public void delete(long id){
+        playerRepository.deleteById(id);
     }
 }
