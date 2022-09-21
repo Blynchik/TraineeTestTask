@@ -1,11 +1,20 @@
 package com.game.controller;
 
 import com.game.entity.Player;
+import com.game.entity.Profession;
+import com.game.entity.Race;
+import com.game.repository.PlayerRepository;
 import com.game.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController //спринг поймет что это контроллер с REST
@@ -14,51 +23,28 @@ public class PlayerController {
 
     private final PlayerService playerService; //внедряем сервис
 
-    @Autowired //автосвязка
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
     }
 
     @GetMapping() //по запросу по условию
-    public List<Player> getPlayers() {
-        return playerService.findAll();
-    }
-
-    @GetMapping("/count")
-    public Integer count() {
-        return playerService.findAll().size();
-    }
-
-    @PostMapping()
-    public Player create(@ModelAttribute("player") Player player,
-                         BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return null;
-        }
-
-        playerService.save(player);
-        return playerService.findOne(player.getId());
-    }
-
-    @GetMapping("/{id}")
-    public Player getOne(@PathVariable("id") long id, Player player) {
-        return playerService.findOne(id);
-    }
-
-    @PostMapping("/{id}")
-    public Player update(@ModelAttribute("player") Player player,
-                         BindingResult bindingResult, @PathVariable("id") long id) {
-        if (bindingResult.hasErrors()) {
-            return null;
-        }
-
-        playerService.update(id, player);
-        return playerService.findOne(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public List<Player> delete(@PathVariable("id") long id){
-        playerService.delete(id);
-        return playerService.findAll();
+    @ResponseBody
+    public List<Player> getAllById(@RequestParam(value = "name", required = false) String name,
+                                   @RequestParam(value = "title", required = false) String title,
+                                   @RequestParam(value = "race", required = false) Race race,
+                                   @RequestParam(value = "profession", required = false) Profession profession,
+                                   @RequestParam(value = "after", required = false) Long after,
+                                   @RequestParam(value = "before", required = false) Long before,
+                                   @RequestParam(value = "banned", required = false) Boolean banned,
+                                   @RequestParam(value = "minExperience", required = false) Integer minExperience,
+                                   @RequestParam(value = "maxExperience", required = false) Integer maxExperience,
+                                   @RequestParam(value = "minLevel", required = false) Integer minLevel,
+                                   @RequestParam(value = "maxLevel", required = false) Integer maxLevel,
+                                   @RequestParam(value = "order", defaultValue = "PlayerOrder.ID") PlayerOrder order,
+                                   @RequestParam(value = "pageNumber", defaultValue = "0") Integer pageNumber,
+                                   @RequestParam(value = "pageSize", defaultValue = "3") Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName()));
+        Page<Player> allPlayers = playerService.findAll(pageable);
+        return allPlayers.getContent();
     }
 }
