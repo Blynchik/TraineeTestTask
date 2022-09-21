@@ -2,6 +2,7 @@ package com.game.controller;
 
 import com.game.entity.Player;
 import com.game.service.PlayerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ public class PlayerController {
 
     private final PlayerService playerService; //внедряем сервис
 
+    @Autowired //автосвязка
     public PlayerController(PlayerService playerService){
         this.playerService = playerService;
     }
