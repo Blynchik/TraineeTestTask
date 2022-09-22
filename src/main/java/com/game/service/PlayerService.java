@@ -2,6 +2,7 @@ package com.game.service;
 
 import com.game.entity.Player;
 import com.game.repository.PlayerRepository;
+import com.game.utils.Exception400;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,52 +40,66 @@ public class PlayerService {
     }
 
     @Transactional
-    public void save(Player player) {
-        if (approvedToSave(player)) {
-            playerRepository.save(player);
-        }
+    public Player save(Player player) {
+        approvedToSave(player);
+        if(player.getBanned() == null) player.setBanned(false);
+        player.setLevel(countCurrentLevel(player));
+        player.setUntilNextLevel(countTillNextLevel(player));
+        return playerRepository.save(player);
     }
 
-    private boolean approvedToSave(Player player) {
+    private void approvedToSave(Player player) {
+
+
         if (player.getName() == null ||
+                player.getName().isEmpty() ||
                 player.getName().length() > NAME_MAX_LENGTH) {
-            return false;
+            throw new Exception400("Inf should not be empty");
         }
 
         if (player.getTitle() == null ||
+                player.getTitle().isEmpty() ||
                 player.getTitle().length() > TITLE_MAX_LENGTH) {
-            return false;
+            throw new Exception400("Inf should not be empty");
         }
 
         if (player.getRace() == null) {
-            return false;
+            throw new Exception400("Inf should not be empty");
         }
 
         if (player.getProfession() == null) {
-            return false;
+            throw new Exception400("Inf should not be empty");
         }
 
         if (player.getBirthday() == null ||
                 player.getBirthday().getTime() < 0 ||
-                player.getBirthday().getTime() < START_TIME.getTime() ||
-                player.getBirthday().getTime() > END_TIME.getTime()) {
-            return false;
+                player.getBirthday().getTime() < START_TIME.getTime() &&
+                        player.getBirthday().getTime() > END_TIME.getTime()) {
+            throw new Exception400("Inf should not be empty");
         }
 
         if (player.getExperience() == null ||
                 player.getExperience() > MAX_EXPERIENCE ||
                 player.getExperience() < MIN_EXPERIENCE) {
-            return false;
+            throw new Exception400("Inf should not be empty");
         }
 
         if (player.getLevel() == null) {
-            return false;
+            throw new Exception400("Inf should not be empty");
         }
 
         if (player.getUntilNextLevel() == null) {
-            return false;
+            throw new Exception400("Inf should not be empty");
         }
+    }
 
-        return true;
+    private int countCurrentLevel(Player player) {
+        double level = (Math.sqrt(2500 + 200 * player.getExperience()) - 50) / 100;
+        return (int) level;
+    }
+
+    private int countTillNextLevel(Player player) {
+        int tillNextLevel = 50 * (countCurrentLevel(player) + 1) * (countCurrentLevel(player) + 2) - player.getExperience();
+        return tillNextLevel;
     }
 }
