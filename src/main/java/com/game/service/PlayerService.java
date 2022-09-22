@@ -40,70 +40,145 @@ public class PlayerService {
         return playerRepository.count();
     }
 
-    @Transactional
-    public Player save(Player player) {
-
-        player.setLevel(countCurrentLevel(player));
-        player.setUntilNextLevel(countTillNextLevel(player));
-
-        approveToSave(player);
-
-        if (player.getBanned() == null) {
-            player.setBanned(false);
-        }
-
-        return playerRepository.save(player);
-    }
-
-    @Transactional
     public Player findOne(long id) {
         checkId(id);
         Optional<Player> foundPlayer = playerRepository.findById(id);
         return foundPlayer.orElseThrow(Exception404::new);
     }
 
-    private void approveToSave(Player player) {
+    @Transactional
+    public Player save(Player player) {
 
+        approveToSave(player);
+
+        if(player.getBanned() == null) player.setBanned(false);
+
+        player.setLevel(countCurrentLevel(player));
+        player.setUntilNextLevel(countTillNextLevel(player));
+
+        return playerRepository.save(player);
+    }
+
+    @Transactional
+    public Player update(long id, Player player) {
+        Player updatedPlayer = findOne(id);
+
+        approveToUpdate(player, updatedPlayer);
+
+        updatedPlayer.setLevel(countCurrentLevel(updatedPlayer));
+        updatedPlayer.setUntilNextLevel(countTillNextLevel(updatedPlayer));
+
+        return playerRepository.save(updatedPlayer);
+    }
+
+
+
+    private void checkId(long id) {
+        if (id <= 0) {
+            throw new Exception400("Incorrect id");
+        }
+    }
+
+    private void checkName(Player player) {
         if (player.getName() == null ||
                 player.getName().isEmpty() ||
                 player.getName().length() > NAME_MAX_LENGTH) {
             throw new Exception400("Inf should not be empty");
         }
+    }
 
+    private void checkTitle(Player player) {
         if (player.getTitle() == null ||
                 player.getTitle().isEmpty() ||
                 player.getTitle().length() > TITLE_MAX_LENGTH) {
             throw new Exception400("Inf should not be empty");
         }
+    }
 
+    private void checkRace(Player player) {
         if (player.getRace() == null) {
             throw new Exception400("Inf should not be empty");
         }
+    }
 
+    private void checkProfession(Player player) {
         if (player.getProfession() == null) {
             throw new Exception400("Inf should not be empty");
         }
+    }
 
+    private void checkBirthday(Player player) {
         if (player.getBirthday() == null ||
                 player.getBirthday().getTime() < 0 ||
                 player.getBirthday().getTime() < START_TIME.getTime() &&
                         player.getBirthday().getTime() > END_TIME.getTime()) {
             throw new Exception400("Inf should not be empty");
         }
+    }
 
+    private void checkExperience(Player player) {
         if (player.getExperience() == null ||
                 player.getExperience() > MAX_EXPERIENCE ||
                 player.getExperience() < MIN_EXPERIENCE) {
             throw new Exception400("Inf should not be empty");
         }
+    }
 
+    private void checkLevel(Player player) {
         if (player.getLevel() == null) {
             throw new Exception400("Inf should not be empty");
         }
+    }
 
+    private void checkUtilNexLevel(Player player) {
         if (player.getUntilNextLevel() == null) {
             throw new Exception400("Inf should not be empty");
         }
+    }
+
+    private void approveToUpdate(Player player, Player updatedPlayer) {
+        if (player.getName() != null) {
+             checkName(player);
+            updatedPlayer.setName(player.getName());
+        }
+
+        if (player.getTitle() != null) {
+            checkTitle(player);
+            updatedPlayer.setTitle(player.getTitle());
+        }
+
+        if (player.getRace() != null) {
+            checkRace(player);
+            updatedPlayer.setRace(player.getRace());
+        }
+
+        if (player.getProfession() != null) {
+            checkProfession(player);
+            updatedPlayer.setProfession(player.getProfession());
+        }
+
+        if (player.getBirthday() != null) {
+            checkBirthday(player);
+            updatedPlayer.setBirthday(player.getBirthday());
+        }
+
+        if (player.getBanned() != null) {
+            updatedPlayer.setBanned(player.getBanned());
+        }
+
+        if (player.getExperience() != null) {
+            checkExperience(player);
+            updatedPlayer.setExperience(player.getExperience());
+        }
+    }
+
+    private void approveToSave(Player player){
+        checkName(player);
+        checkTitle(player);
+        checkRace(player);
+        checkProfession(player);
+        checkBirthday(player);
+        checkExperience(player);
     }
 
     private int countCurrentLevel(Player player) {
@@ -114,11 +189,5 @@ public class PlayerService {
     private int countTillNextLevel(Player player) {
         int tillNextLevel = 50 * (countCurrentLevel(player) + 1) * (countCurrentLevel(player) + 2) - player.getExperience();
         return tillNextLevel;
-    }
-
-    private void checkId(long id) {
-        if (id <= 0) {
-            throw new Exception400("Incorrect id");
-        }
     }
 }

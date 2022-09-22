@@ -33,7 +33,7 @@ public class PlayerController {
 
     @GetMapping() //по запросу по условию
     @ResponseBody
-    public List<Player> getAllById(@RequestParam(value = "name", required = false) String name,
+    public List<Player> getPlayers(@RequestParam(value = "name", required = false) String name,
                                    @RequestParam(value = "title", required = false) String title,
                                    @RequestParam(value = "race", required = false) Race race,
                                    @RequestParam(value = "profession", required = false) Profession profession,
@@ -54,23 +54,23 @@ public class PlayerController {
 
     @GetMapping("/count") //по запросу по условию
     @ResponseBody
-    public Long getAllCount(@RequestParam(value = "name", required = false) String name,
-                            @RequestParam(value = "title", required = false) String title,
-                            @RequestParam(value = "race", required = false) Race race,
-                            @RequestParam(value = "profession", required = false) Profession profession,
-                            @RequestParam(value = "after", required = false) Long after,
-                            @RequestParam(value = "before", required = false) Long before,
-                            @RequestParam(value = "banned", required = false) Boolean banned,
-                            @RequestParam(value = "minExperience", required = false) Integer minExperience,
-                            @RequestParam(value = "maxExperience", required = false) Integer maxExperience,
-                            @RequestParam(value = "minLevel", required = false) Integer minLevel,
-                            @RequestParam(value = "maxLevel", required = false) Integer maxLevel) {
+    public Long getPlayersCount(@RequestParam(value = "name", required = false) String name,
+                                @RequestParam(value = "title", required = false) String title,
+                                @RequestParam(value = "race", required = false) Race race,
+                                @RequestParam(value = "profession", required = false) Profession profession,
+                                @RequestParam(value = "after", required = false) Long after,
+                                @RequestParam(value = "before", required = false) Long before,
+                                @RequestParam(value = "banned", required = false) Boolean banned,
+                                @RequestParam(value = "minExperience", required = false) Integer minExperience,
+                                @RequestParam(value = "maxExperience", required = false) Integer maxExperience,
+                                @RequestParam(value = "minLevel", required = false) Integer minLevel,
+                                @RequestParam(value = "maxLevel", required = false) Integer maxLevel) {
         return playerService.findAllCount();
     }
 
     @ResponseBody
     @GetMapping("/{id}")
-    public Player getPlayer(@PathVariable("id") Long id){
+    public Player getPlayer(@PathVariable("id") Long id) {
         return playerService.findOne(id);
     }
 
@@ -78,5 +78,19 @@ public class PlayerController {
     @ResponseBody
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         return ResponseEntity.ok(playerService.save(player));
+    }
+
+    @PostMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<Player> updatePlayer(@RequestBody Player player,
+                                               @PathVariable("id") long id) {
+        return ResponseEntity.ok(playerService.update(id, player));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<HttpStatus> deletePlayer(@RequestBody Player player,
+                                                   @PathVariable("id") long id) {
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }
