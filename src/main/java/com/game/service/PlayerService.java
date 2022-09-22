@@ -51,7 +51,7 @@ public class PlayerService {
 
         approveToSave(player);
 
-        if(player.getBanned() == null) player.setBanned(false);
+        if (player.getBanned() == null) player.setBanned(false);
 
         player.setLevel(countCurrentLevel(player));
         player.setUntilNextLevel(countTillNextLevel(player));
@@ -71,11 +71,15 @@ public class PlayerService {
         return playerRepository.save(updatedPlayer);
     }
 
-
+    @Transactional
+    public void delete(long id) {
+        Player player = findOne(id);
+        playerRepository.deleteById(player.getId());
+    }
 
     private void checkId(long id) {
         if (id <= 0) {
-            throw new Exception400("Incorrect id");
+            throw new Exception400();
         }
     }
 
@@ -83,7 +87,7 @@ public class PlayerService {
         if (player.getName() == null ||
                 player.getName().isEmpty() ||
                 player.getName().length() > NAME_MAX_LENGTH) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
@@ -91,19 +95,19 @@ public class PlayerService {
         if (player.getTitle() == null ||
                 player.getTitle().isEmpty() ||
                 player.getTitle().length() > TITLE_MAX_LENGTH) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
     private void checkRace(Player player) {
         if (player.getRace() == null) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
     private void checkProfession(Player player) {
         if (player.getProfession() == null) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
@@ -112,7 +116,7 @@ public class PlayerService {
                 player.getBirthday().getTime() < 0 ||
                 player.getBirthday().getTime() < START_TIME.getTime() &&
                         player.getBirthday().getTime() > END_TIME.getTime()) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
@@ -120,25 +124,25 @@ public class PlayerService {
         if (player.getExperience() == null ||
                 player.getExperience() > MAX_EXPERIENCE ||
                 player.getExperience() < MIN_EXPERIENCE) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
     private void checkLevel(Player player) {
         if (player.getLevel() == null) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
     private void checkUtilNexLevel(Player player) {
         if (player.getUntilNextLevel() == null) {
-            throw new Exception400("Inf should not be empty");
+            throw new Exception400();
         }
     }
 
     private void approveToUpdate(Player player, Player updatedPlayer) {
         if (player.getName() != null) {
-             checkName(player);
+            checkName(player);
             updatedPlayer.setName(player.getName());
         }
 
@@ -172,7 +176,7 @@ public class PlayerService {
         }
     }
 
-    private void approveToSave(Player player){
+    private void approveToSave(Player player) {
         checkName(player);
         checkTitle(player);
         checkRace(player);

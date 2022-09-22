@@ -88,9 +88,8 @@ public class PlayerController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<HttpStatus> deletePlayer(@RequestBody Player player,
-                                                   @PathVariable("id") long id) {
+    public ResponseEntity<HttpStatus> deletePlayer(@PathVariable("id") long id) {
+        playerService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 }
