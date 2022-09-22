@@ -68,10 +68,15 @@ public class PlayerController {
         return playerService.findAllCount();
     }
 
+    @ResponseBody
+    @GetMapping("/{id}")
+    public Player getPlayer(@PathVariable("id") Long id){
+        return playerService.findOne(id);
+    }
+
     @PostMapping()
     @ResponseBody
-    public ResponseEntity<HttpStatus> createPlayer(@RequestBody Player player) {
-        playerService.save(player);
-        return ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
+        return ResponseEntity.ok(playerService.save(player));
     }
 }

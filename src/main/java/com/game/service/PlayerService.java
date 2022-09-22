@@ -3,6 +3,7 @@ package com.game.service;
 import com.game.entity.Player;
 import com.game.repository.PlayerRepository;
 import com.game.utils.Exception400;
+import com.game.utils.Exception404;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,15 +42,27 @@ public class PlayerService {
 
     @Transactional
     public Player save(Player player) {
-        approvedToSave(player);
-        if(player.getBanned() == null) player.setBanned(false);
+
         player.setLevel(countCurrentLevel(player));
         player.setUntilNextLevel(countTillNextLevel(player));
+
+        approveToSave(player);
+
+        if (player.getBanned() == null) {
+            player.setBanned(false);
+        }
+
         return playerRepository.save(player);
     }
 
-    private void approvedToSave(Player player) {
+    @Transactional
+    public Player findOne(long id) {
+        checkId(id);
+        Optional<Player> foundPlayer = playerRepository.findById(id);
+        return foundPlayer.orElseThrow(Exception404::new);
+    }
 
+    private void approveToSave(Player player) {
 
         if (player.getName() == null ||
                 player.getName().isEmpty() ||
@@ -101,5 +114,11 @@ public class PlayerService {
     private int countTillNextLevel(Player player) {
         int tillNextLevel = 50 * (countCurrentLevel(player) + 1) * (countCurrentLevel(player) + 2) - player.getExperience();
         return tillNextLevel;
+    }
+
+    private void checkId(long id) {
+        if (id <= 0) {
+            throw new Exception400("Incorrect id");
+        }
     }
 }
