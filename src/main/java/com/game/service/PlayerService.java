@@ -1,6 +1,8 @@
 package com.game.service;
 
 import com.game.entity.Player;
+import com.game.entity.Profession;
+import com.game.entity.Race;
 import com.game.repository.PlayerRepository;
 import com.game.utils.Exception400;
 import com.game.utils.Exception404;
@@ -11,6 +13,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -37,8 +43,8 @@ public class PlayerService {
         return playerRepository.findAll(spec, pageable);
     }
 
-    public Integer findAllCount(Specification<Player> spec) {
-        return (int) playerRepository.count(spec);
+    public Long findAllCount(Specification<Player> spec) {
+        return playerRepository.count(spec);
     }
 
     public Player findOne(long id) {
